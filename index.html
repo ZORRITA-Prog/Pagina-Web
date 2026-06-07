@@ -2,960 +2,564 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZORRITA - Clima, Hora & Busqueda Segura</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acta de Matrimonio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        :root {
-            --primary: #1a1a2e;
-            --secondary: #16213e;
-            --accent: #0f3460;
-            --highlight: #e94560;
-            --text: #eaeaea;
-            --muted: #8b8b9a;
-            --rain: #4a90d9;
-            --safe: #00d4aa;
-        }
-
-        html, body {
-            font-family: 'Rajdhani', sans-serif;
-            background: var(--primary);
-            color: var(--text);
+        body {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            background: #f5f0eb;
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-            touch-action: manipulation;
-        }
-
-        /* ===== SPLASH ===== */
-        .splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0a0a0f;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            z-index: 10000;
-            transition: opacity 1.2s ease, transform 1.2s ease;
-        }
-
-        .splash-screen.hidden {
-            opacity: 0;
-            transform: scale(1.1);
-            pointer-events: none;
-        }
-
-        .splash-image {
-            width: 260px;
-            height: 260px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--highlight);
-            box-shadow: 0 0 60px rgba(233, 69, 96, 0.4), 
-                        0 0 120px rgba(233, 69, 96, 0.1);
-            animation: pulse-glow 2s ease-in-out infinite;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        .splash-image:hover, .splash-image:active {
-            transform: scale(1.05);
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 60px rgba(233, 69, 96, 0.4), 0 0 120px rgba(233, 69, 96, 0.1); }
-            50% { box-shadow: 0 0 80px rgba(233, 69, 96, 0.6), 0 0 160px rgba(233, 69, 96, 0.2); }
-        }
-
-        .tap-hint {
-            margin-top: 30px;
-            font-family: 'Caveat', cursive;
-            font-size: 1.6rem;
-            color: var(--muted);
-            animation: fade-blink 1.5s ease-in-out infinite;
-            letter-spacing: 2px;
-            pointer-events: none;
-        }
-
-        @keyframes fade-blink {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
-        }
-
-        /* ===== CREATOR REVEAL ===== */
-        .creator-reveal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 15, 0.98);
-            display: none;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            transition: opacity 0.8s ease;
+            padding: 20px;
         }
 
-        .creator-reveal.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .creator-image {
-            width: 200px;
-            height: 200px;
-            border-radius: 20px;
-            object-fit: cover;
-            border: 2px solid var(--highlight);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
-            animation: slideUp 0.6s ease;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .creator-name {
-            font-family: 'Caveat', cursive;
-            font-size: 3rem;
-            color: var(--highlight);
-            text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
-            animation: slideUp 0.6s ease 0.2s both;
-        }
-
-        .creator-title {
-            font-size: 1.1rem;
-            color: var(--muted);
-            margin-top: 10px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            animation: slideUp 0.6s ease 0.4s both;
-        }
-
-        .close-creator {
-            margin-top: 30px;
-            padding: 12px 35px;
-            background: transparent;
-            border: 2px solid var(--highlight);
-            color: var(--highlight);
-            border-radius: 50px;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            animation: slideUp 0.6s ease 0.6s both;
-            -webkit-tap-highlight-color: rgba(233, 69, 96, 0.3);
-        }
-
-        .close-creator:hover, .close-creator:active {
-            background: var(--highlight);
-            color: white;
-        }
-
-        /* ===== ZORRITA BADGE ===== */
-        .zorrita-badge {
+        .creator-badge {
             position: fixed;
-            bottom: 15px;
+            top: 15px;
             right: 15px;
+            background: rgba(139, 69, 19, 0.9);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             z-index: 1000;
-            font-family: 'Caveat', cursive;
-            font-size: 1.8rem;
-            color: var(--highlight);
-            opacity: 0.3;
-            transition: opacity 0.3s;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .document-container {
+            background: #fff;
+            border: 2px dashed #8B4513;
+            padding: 50px 60px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .document-container::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px solid #d4a574;
             pointer-events: none;
-            text-shadow: 0 0 10px rgba(233, 69, 96, 0.3);
-            transform: rotate(-5deg);
         }
 
-        /* ===== MAIN APP ===== */
-        .main-app {
-            display: none;
-            min-height: 100vh;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-
-        .main-app.visible {
-            display: block;
-            opacity: 1;
-        }
-
-        /* ===== HEADER ===== */
-        .header {
+        h1 {
+            font-family: 'Playfair Display', serif;
             text-align: center;
-            padding: 40px 20px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, var(--text), var(--highlight));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-
-        .header .subtitle {
-            color: var(--muted);
-            font-size: 1rem;
+            font-size: 2.2em;
+            font-weight: 600;
+            color: #2c1810;
+            margin-bottom: 30px;
             letter-spacing: 2px;
         }
 
-        /* ===== RELOJ Y FECHA ===== */
-        .datetime-section {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin: 30px 0;
-        }
-
-        .datetime-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 25px 35px;
+        .date-time {
             text-align: center;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s;
-            min-width: 160px;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+            color: #3e2723;
         }
 
-        .datetime-card:hover {
-            border-color: var(--highlight);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 40px rgba(233, 69, 96, 0.1);
+        .date-time .field-group {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 10px;
         }
 
-        .datetime-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--muted);
-            margin-bottom: 10px;
-        }
-
-        .datetime-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--text);
-            font-family: 'Rajdhani', sans-serif;
-        }
-
-        .date-value {
-            font-size: 1.2rem;
-        }
-
-        /* ===== CLIMA ===== */
-        .weather-section {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 2px;
-            background: var(--highlight);
-            margin: 10px auto 0;
-        }
-
-        .weather-search {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .weather-search input {
-            flex: 1;
-            min-width: 250px;
-            max-width: 400px;
-            padding: 15px 25px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 50px;
-            color: var(--text);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        .weather-search input:focus {
-            border-color: var(--highlight);
-            box-shadow: 0 0 20px rgba(233, 69, 96, 0.2);
-        }
-
-        .weather-search input::placeholder {
-            color: var(--muted);
-        }
-
-        .weather-search button {
-            padding: 15px 30px;
-            background: var(--highlight);
-            border: none;
-            border-radius: 50px;
-            color: white;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
+        .date-time label {
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            -webkit-tap-highlight-color: rgba(255,255,255,0.2);
+            margin-right: 5px;
         }
 
-        .weather-search button:hover, .weather-search button:active {
-            background: #ff6b81;
-            transform: scale(1.05);
-            box-shadow: 0 5px 25px rgba(233, 69, 96, 0.4);
+        .intro-text {
+            text-align: left;
+            margin-bottom: 30px;
+            font-size: 1.15em;
+            line-height: 1.8;
+            color: #3e2723;
         }
 
-        .weather-result {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 25px;
-            padding: 30px;
+        .intro-text .inline-field {
+            display: inline-block;
+            width: 200px;
+            border: none;
+            border-bottom: 1px solid #8B4513;
+            background: transparent;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1em;
+            color: #3e2723;
             text-align: center;
-            backdrop-filter: blur(10px);
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s ease;
+            padding: 2px 5px;
+            outline: none;
         }
 
-        .weather-result.show {
-            display: block;
-            opacity: 1;
+        .intro-text .inline-field:focus {
+            border-bottom: 2px solid #8B4513;
+            background: rgba(139, 69, 19, 0.05);
         }
 
-        .weather-city {
-            font-size: 2rem;
-            font-weight: 700;
+        .vow-section {
+            margin: 35px 0;
+            padding: 20px 0;
+            border-top: 1px solid #d4a574;
+        }
+
+        .vow-section:first-of-type {
+            border-top: none;
+        }
+
+        .vow-text {
+            font-size: 1.15em;
+            line-height: 1.9;
+            color: #3e2723;
+            text-align: justify;
+        }
+
+        .vow-text .name-field {
+            display: inline-block;
+            width: 250px;
+            border: none;
+            border-bottom: 1px solid #8B4513;
+            background: transparent;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1em;
+            color: #3e2723;
+            text-align: center;
+            padding: 2px 5px;
+            outline: none;
+            font-weight: 600;
+        }
+
+        .vow-text .name-field:focus {
+            border-bottom: 2px solid #8B4513;
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .vow-text .name-field-long {
+            width: 300px;
+        }
+
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 20px;
+        }
+
+        .signature-box {
+            text-align: center;
+            width: 45%;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #8B4513;
+            height: 40px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .signature-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2em;
+            color: #3e2723;
+            text-align: center;
+            outline: none;
+            font-style: italic;
+        }
+
+        .signature-input:focus {
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .signature-label {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #3e2723;
+        }
+
+        .witness-section {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-top: 40px;
+            gap: 40px;
+        }
+
+        .witness-box {
+            text-align: center;
+        }
+
+        .paw-print {
+            font-size: 3em;
+            color: #3e2723;
             margin-bottom: 5px;
-            color: var(--text);
+            opacity: 0.8;
         }
 
-        .weather-country {
-            color: var(--muted);
-            font-size: 1rem;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
+        .witness-line {
+            border-bottom: 1px solid #8B4513;
+            width: 150px;
+            height: 30px;
+            margin: 0 auto 5px;
         }
 
-        .weather-main {
+        .witness-label {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #3e2723;
+        }
+
+        .seal {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #8B4513;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .weather-icon {
-            font-size: 4rem;
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
-        }
-
-        .weather-temp {
-            font-size: 4rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff, var(--rain));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .weather-desc {
-            font-size: 1.3rem;
-            color: var(--muted);
-            text-transform: capitalize;
-            margin: 10px 0;
-        }
-
-        .rain-status {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-        }
-
-        .rain-yes {
-            background: rgba(74, 144, 217, 0.2);
-            border: 1px solid var(--rain);
-            color: var(--rain);
-        }
-
-        .rain-no {
-            background: rgba(255, 193, 7, 0.2);
-            border: 1px solid #ffc107;
-            color: #ffc107;
-        }
-
-        .weather-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .detail-item {
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .detail-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--muted);
-            margin-bottom: 5px;
-        }
-
-        .detail-value {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .error-msg {
-            color: var(--highlight);
+            font-size: 0.7em;
             text-align: center;
-            padding: 20px;
-            display: none;
-            background: rgba(233, 69, 96, 0.1);
-            border-radius: 15px;
-            margin-bottom: 15px;
+            color: #8B4513;
+            line-height: 1.3;
+            opacity: 0.6;
+            transform: rotate(-15deg);
         }
 
-        .error-msg.show {
-            display: block;
-        }
-
-        /* ===== BUSCADOR SEGURO ===== */
-        .search-section {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 0 20px;
-        }
-
-        .search-container {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 25px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-        }
-
-        .search-info {
-            background: rgba(0, 212, 170, 0.1);
-            border: 1px solid var(--safe);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            color: var(--safe);
-            font-size: 0.95rem;
-        }
-
-        .search-info strong {
-            color: var(--text);
-        }
-
-        .search-input-group {
+        .seal-inner {
+            border: 1px solid #8B4513;
+            border-radius: 50%;
+            width: 85px;
+            height: 85px;
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
         }
 
-        .search-input-group input {
-            flex: 1;
-            min-width: 200px;
-            padding: 15px 25px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 50px;
-            color: var(--text);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        .search-input-group input:focus {
-            border-color: var(--safe);
-            box-shadow: 0 0 20px rgba(0, 212, 170, 0.2);
-        }
-
-        .search-input-group input::placeholder {
-            color: var(--muted);
-        }
-
-        .search-input-group button {
-            padding: 15px 30px;
-            background: var(--safe);
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #8B4513;
+            color: #fff;
             border: none;
-            border-radius: 50px;
-            color: #0a0a0f;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s;
-            -webkit-tap-highlight-color: rgba(0, 212, 170, 0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
 
-        .search-input-group button:hover, .search-input-group button:active {
-            background: #00ffc8;
-            transform: scale(1.05);
-            box-shadow: 0 5px 25px rgba(0, 212, 170, 0.4);
+        .print-btn:hover {
+            background: #6d3610;
+            transform: translateY(-2px);
         }
 
-        .engine-selector {
+        /* Donation Section */
+        .donation-section {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #d4a574;
+            text-align: center;
+        }
+
+        .donation-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4em;
+            color: #2c1810;
+            margin-bottom: 10px;
+        }
+
+        .donation-subtitle {
+            font-size: 1em;
+            color: #6d4c41;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .donation-buttons {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
             margin-bottom: 20px;
         }
 
-        .engine-btn {
-            padding: 8px 18px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+        .donate-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #0070BA;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 28px;
             border-radius: 25px;
-            color: var(--muted);
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .engine-btn:hover {
-            border-color: var(--safe);
-            color: var(--safe);
-        }
-
-        .engine-btn.active {
-            background: var(--safe);
-            border-color: var(--safe);
-            color: #0a0a0f;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1em;
             font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 112, 186, 0.3);
+            border: none;
+            cursor: pointer;
         }
 
-        /* ===== FOOTER ===== */
-        .footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--muted);
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: 50px;
+        .donate-btn:hover {
+            background: #005ea6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 112, 186, 0.4);
         }
 
-        .footer strong {
-            color: var(--highlight);
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .header h1 { font-size: 1.8rem; }
-            .weather-temp { font-size: 3rem; }
-            .splash-image { width: 200px; height: 200px; }
-            .creator-name { font-size: 2.2rem; }
-            .datetime-card { padding: 20px 25px; min-width: 140px; }
-            .zorrita-badge { font-size: 1.4rem; }
-            .datetime-value { font-size: 1.8rem; }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 { font-size: 1.4rem; letter-spacing: 2px; }
-            .weather-search input { min-width: 100%; }
-            .search-input-group input { min-width: 100%; }
-            .splash-image { width: 160px; height: 160px; }
-            .tap-hint { font-size: 1.3rem; }
-            .weather-icon { font-size: 3rem; }
-            .weather-temp { font-size: 2.5rem; }
-            .engine-selector { gap: 6px; }
-            .engine-btn { padding: 6px 12px; font-size: 0.75rem; }
-        }
-
-        /* ===== LOADING ===== */
-        .loading {
-            display: inline-block;
+        .donate-btn svg {
             width: 20px;
             height: 20px;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-top-color: var(--highlight);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-left: 10px;
+            fill: currentColor;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .donate-custom {
+            margin-top: 15px;
+        }
+
+        .donate-custom-input {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .donate-custom-input input {
+            width: 100px;
+            padding: 10px 15px;
+            border: 2px solid #0070BA;
+            border-radius: 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1em;
+            text-align: center;
+            outline: none;
+            color: #3e2723;
+        }
+
+        .donate-custom-input input:focus {
+            border-color: #005ea6;
+            box-shadow: 0 0 0 3px rgba(0, 112, 186, 0.2);
+        }
+
+        .donate-custom-btn {
+            background: #0070BA;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .donate-custom-btn:hover {
+            background: #005ea6;
+        }
+
+        .paypal-badge {
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: #6d4c41;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .creator-badge, .print-btn, .donation-section {
+                display: none;
+            }
+            .document-container {
+                box-shadow: none;
+                border: 2px dashed #8B4513;
+                max-width: 100%;
+            }
+            input {
+                border-bottom: 1px solid #8B4513 !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .document-container {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 1.6em;
+            }
+            .intro-text .inline-field,
+            .vow-text .name-field,
+            .vow-text .name-field-long {
+                width: 150px;
+            }
+            .signatures {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .signature-box {
+                width: 100%;
+            }
+            .witness-section {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .donation-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .donate-btn {
+                width: 200px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="creator-badge">Creador Zorrita</div>
 
-    <!-- ===== SPLASH ===== -->
-    <div class="splash-screen" id="splash">
-        <img src="foto.png" alt="Portada" class="splash-image" id="splashImg" onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22260%22 height=%22260%22><rect fill=%22%231a1a2e%22 width=%22260%22 height=%22260%22/><text fill=%22%23e94560%22 font-family=%22Arial%22 font-size=%2240%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22>ZORRITA</text></svg>'">
-        <p class="tap-hint">Toca la imagen o presiona Enter</p>
+    <div class="document-container">
+        <h1>Acta de Matrimonio</h1>
+
+        <div class="date-time">
+            <div class="field-group">
+                <label>Fecha:</label>
+                <input type="text" class="inline-field" style="width: 180px;" placeholder="__/__/____">
+            </div>
+            <div class="field-group">
+                <label>Hora:</label>
+                <input type="text" class="inline-field" style="width: 100px;" placeholder="__:__">
+            </div>
+        </div>
+
+        <div class="intro-text">
+            Este día <input type="text" class="inline-field" placeholder="nombre de la novia"> en <input type="text" class="inline-field" placeholder="lugar"> se unirán en sagrado matrimonio con los siguientes votos.
+        </div>
+
+        <div class="vow-section">
+            <div class="vow-text">
+                Con esta mano yo: <input type="text" class="name-field name-field-long" placeholder="nombre de la novia"> sostendré tus anhelos; tu copa nunca estará vacía, pues yo seré tu vino; con esta vela alumbraré tu camino en la oscuridad, Y con este anillo yo te pido a ti:<br><br>
+                <input type="text" class="name-field name-field-long" placeholder="nombre del novio"> que seas mi esposo.
+            </div>
+        </div>
+
+        <div class="vow-section">
+            <div class="vow-text">
+                Con esta mano yo: <input type="text" class="name-field name-field-long" placeholder="nombre del novio"> sostendré tus anhelos; tu copa nunca estará vacía, pues yo seré tu vino; con esta vela alumbraré tu camino en la oscuridad, Y con este anillo yo te pido a ti:<br><br>
+                <input type="text" class="name-field name-field-long" placeholder="nombre de la novia"> que seas mi esposa.
+            </div>
+        </div>
+
+        <div class="signatures">
+            <div class="signature-box">
+                <div class="signature-line">
+                    <input type="text" class="signature-input" placeholder="Firma">
+                </div>
+                <div class="signature-label">Firma de la esposa</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line">
+                    <input type="text" class="signature-input" placeholder="Firma">
+                </div>
+                <div class="signature-label">Firma del esposo</div>
+            </div>
+        </div>
+
+        <div class="witness-section">
+            <div class="witness-box">
+                <div class="paw-print">🐾</div>
+                <div class="witness-line"></div>
+                <div class="witness-label">Testigo</div>
+            </div>
+            <div class="seal">
+                <div class="seal-inner">
+                    ESTADOS UNIDOS<br>MEXICANOS<br>REGISTRO CIVIL
+                </div>
+            </div>
+        </div>
+
+        <!-- Donation Section -->
+        <div class="donation-section">
+            <div class="donation-title">💝 Apoya este proyecto</div>
+            <div class="donation-subtitle">Si te gustó esta acta de matrimonio, considera hacer una donación</div>
+
+            <div class="donation-buttons">
+                <a href="https://www.paypal.com/paypalme/chizugz55/1" target="_blank" class="donate-btn">
+                    <svg viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c1.653.624 2.721 1.818 2.721 4.062 0 2.727-1.903 4.722-5.299 5.253l-.014.01-.01.01-1.15 7.29h-4.28l1.58-10.02c.03-.19.19-.34.39-.34h2.19c3.56 0 6.36-1.44 7.48-5.724z"/></svg>
+                    $1 USD
+                </a>
+                <a href="https://www.paypal.com/paypalme/chizugz55/5" target="_blank" class="donate-btn">
+                    <svg viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c1.653.624 2.721 1.818 2.721 4.062 0 2.727-1.903 4.722-5.299 5.253l-.014.01-.01.01-1.15 7.29h-4.28l1.58-10.02c.03-.19.19-.34.39-.34h2.19c3.56 0 6.36-1.44 7.48-5.724z"/></svg>
+                    $5 USD
+                </a>
+                <a href="https://www.paypal.com/paypalme/chizugz55/10" target="_blank" class="donate-btn">
+                    <svg viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c1.653.624 2.721 1.818 2.721 4.062 0 2.727-1.903 4.722-5.299 5.253l-.014.01-.01.01-1.15 7.29h-4.28l1.58-10.02c.03-.19.19-.34.39-.34h2.19c3.56 0 6.36-1.44 7.48-5.724z"/></svg>
+                    $10 USD
+                </a>
+                <a href="https://www.paypal.com/paypalme/chizugz55/25" target="_blank" class="donate-btn">
+                    <svg viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c1.653.624 2.721 1.818 2.721 4.062 0 2.727-1.903 4.722-5.299 5.253l-.014.01-.01.01-1.15 7.29h-4.28l1.58-10.02c.03-.19.19-.34.39-.34h2.19c3.56 0 6.36-1.44 7.48-5.724z"/></svg>
+                    $25 USD
+                </a>
+            </div>
+
+            <div class="donate-custom">
+                <div class="donate-custom-input">
+                    <span style="font-size:1.2em; color:#3e2723;">$</span>
+                    <input type="number" id="customAmount" placeholder="Otra cantidad" min="1" step="1">
+                    <button class="donate-custom-btn" onclick="donateCustom()">
+                        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor;vertical-align:middle;margin-right:5px;"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c1.653.624 2.721 1.818 2.721 4.062 0 2.727-1.903 4.722-5.299 5.253l-.014.01-.01.01-1.15 7.29h-4.28l1.58-10.02c.03-.19.19-.34.39-.34h2.19c3.56 0 6.36-1.44 7.48-5.724z"/></svg>
+                        Donar
+                    </button>
+                </div>
+            </div>
+
+            <div class="paypal-badge">
+                Pagos seguros procesados por PayPal · chizugz55@gmail.com
+            </div>
+        </div>
     </div>
 
-    <!-- ===== CREATOR REVEAL ===== -->
-    <div class="creator-reveal" id="creatorReveal">
-        <img src="name.png" alt="Creador" class="creator-image" onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%2316213e%22 width=%22200%22 height=%22200%22 rx=%2220%22/><text fill=%22%23e94560%22 font-family=%22Arial%22 font-size=%2230%22 x=%2250%%22 y=%2250%%22 text-anchor=%22middle%22 dy=%22.3em%22>ZORRITA</text></svg>'">
-        <div class="creator-name">ZORRITA</div>
-        <div class="creator-title">Programadora</div>
-        <button class="close-creator" id="closeCreatorBtn">Entrar al sitio</button>
-    </div>
-
-    <!-- ===== MAIN APP ===== -->
-    <div class="main-app" id="mainApp">
-
-        <header class="header">
-            <h1>ZORRITA</h1>
-            <p class="subtitle">Clima &middot; Hora &middot; Busqueda Segura</p>
-        </header>
-
-        <!-- Reloj y Fecha -->
-        <section class="datetime-section">
-            <div class="datetime-card">
-                <div class="datetime-label">Hora Exacta</div>
-                <div class="datetime-value" id="clock">00:00:00</div>
-            </div>
-            <div class="datetime-card">
-                <div class="datetime-label">Fecha</div>
-                <div class="datetime-value date-value" id="date">--</div>
-            </div>
-        </section>
-
-        <!-- Clima -->
-        <section class="weather-section">
-            <h2 class="section-title">Clima Mundial</h2>
-            <div class="weather-search">
-                <input type="text" id="cityInput" placeholder="Escribe un pais o ciudad...">
-                <button id="searchWeatherBtn">Buscar</button>
-            </div>
-            <div class="error-msg" id="weatherError"></div>
-            <div class="weather-result" id="weatherResult">
-                <div class="weather-city" id="wCity">--</div>
-                <div class="weather-country" id="wCountry">--</div>
-                <div class="weather-main">
-                    <div class="weather-icon" id="wIcon">🌡️</div>
-                    <div class="weather-temp" id="wTemp">--°</div>
-                </div>
-                <div class="weather-desc" id="wDesc">--</div>
-                <div class="rain-status" id="wRain">--</div>
-                <div class="weather-details">
-                    <div class="detail-item">
-                        <div class="detail-label">Humedad</div>
-                        <div class="detail-value" id="wHumidity">--%</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Viento</div>
-                        <div class="detail-value" id="wWind">-- km/h</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Sensacion</div>
-                        <div class="detail-value" id="wFeels">--°</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Presion</div>
-                        <div class="detail-value" id="wPressure">-- hPa</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Buscador Seguro -->
-        <section class="search-section">
-            <h2 class="section-title">Busqueda Segura</h2>
-            <div class="search-container">
-                <div class="search-info">
-                    🔒 Buscador privado. <strong>No rastrea tu historial.</strong> Elige motor y busca lo que quieras.
-                </div>
-                <div class="engine-selector">
-                    <button class="engine-btn active" data-engine="duckduckgo">DuckDuckGo</button>
-                    <button class="engine-btn" data-engine="startpage">Startpage</button>
-                    <button class="engine-btn" data-engine="brave">Brave Search</button>
-                    <button class="engine-btn" data-engine="searx">SearXNG</button>
-                </div>
-                <div class="search-input-group">
-                    <input type="text" id="searchInput" placeholder="Busca pan, gatos, noticias, lo que sea...">
-                    <button id="searchBtn">Buscar</button>
-                </div>
-            </div>
-        </section>
-
-        <footer class="footer">
-            <p>Hecho por <strong>ZORRITA</strong></p>
-            <p style="margin-top:8px; font-size:0.8rem; color: var(--muted);">disfruta mi Pagina Web.</p>
-        </footer>
-    </div>
-
-    <!-- Firma ZORRITA -->
-    <div class="zorrita-badge">ZORRITA</div>
+    <button class="print-btn" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
 
     <script>
-        // ===== SPLASH =====
-        const splash = document.getElementById('splash');
-        const splashImg = document.getElementById('splashImg');
-        const creatorReveal = document.getElementById('creatorReveal');
-        const closeCreatorBtn = document.getElementById('closeCreatorBtn');
-        const mainApp = document.getElementById('mainApp');
-        let splashOpened = false;
-
-        function openSplash() {
-            if (splashOpened) return;
-            splashOpened = true;
-            splash.classList.add('hidden');
-            setTimeout(function() {
-                splash.style.display = 'none';
-                creatorReveal.classList.add('active');
-            }, 1200);
-        }
-
-        splashImg.addEventListener('click', openSplash);
-        splashImg.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            openSplash();
-        }, {passive: false});
-
-        splash.addEventListener('click', function(e) {
-            if (e.target === splash || e.target.classList.contains('tap-hint')) {
-                openSplash();
-            }
-        });
-        splash.addEventListener('touchstart', function(e) {
-            if (e.target === splash || e.target.classList.contains('tap-hint')) {
-                e.preventDefault();
-                openSplash();
-            }
-        }, {passive: false});
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !splash.classList.contains('hidden')) {
-                openSplash();
-            }
-        });
-
-        function closeCreator() {
-            creatorReveal.style.opacity = '0';
-            setTimeout(function() {
-                creatorReveal.classList.remove('active');
-                creatorReveal.style.display = 'none';
-                mainApp.classList.add('visible');
-                startClock();
-            }, 800);
-        }
-
-        closeCreatorBtn.addEventListener('click', closeCreator);
-        closeCreatorBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            closeCreator();
-        }, {passive: false});
-
-        // ===== RELOJ =====
-        let clockStarted = false;
-        function startClock() {
-            if (clockStarted) return;
-            clockStarted = true;
-            function updateClock() {
-                const now = new Date();
-                document.getElementById('clock').textContent = now.toLocaleTimeString('es-ES', {hour12: false});
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                document.getElementById('date').textContent = now.toLocaleDateString('es-ES', options);
-            }
-            updateClock();
-            setInterval(updateClock, 1000);
-        }
-
-        // ===== CLIMA =====
-        const cityInput = document.getElementById('cityInput');
-        const searchWeatherBtn = document.getElementById('searchWeatherBtn');
-        const weatherError = document.getElementById('weatherError');
-        const weatherResult = document.getElementById('weatherResult');
-
-        async function searchWeather() {
-            const city = cityInput.value.trim();
-            if (!city) return;
-            searchWeatherBtn.innerHTML = 'Buscando <span class="loading"></span>';
-            weatherError.classList.remove('show');
-            weatherResult.classList.remove('show');
-
-            try {
-                const geoRes = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(city) + '&count=1&language=es&format=json');
-                const geoData = await geoRes.json();
-                if (!geoData.results || geoData.results.length === 0) {
-                    throw new Error('Ciudad no encontrada. Intenta con otra.');
-                }
-                const loc = geoData.results[0];
-                const weatherRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + loc.latitude + '&longitude=' + loc.longitude + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,pressure_msl,precipitation&timezone=auto');
-                const weatherData = await weatherRes.json();
-                const current = weatherData.current;
-
-                const weatherCodes = {
-                    0: {icon: '☀️', desc: 'Despejado'},
-                    1: {icon: '🌤️', desc: 'Principalmente despejado'},
-                    2: {icon: '⛅', desc: 'Parcialmente nublado'},
-                    3: {icon: '☁️', desc: 'Nublado'},
-                    45: {icon: '🌫️', desc: 'Niebla'},
-                    48: {icon: '🌫️', desc: 'Niebla con escarcha'},
-                    51: {icon: '🌦️', desc: 'Llovizna ligera'},
-                    53: {icon: '🌦️', desc: 'Llovizna moderada'},
-                    55: {icon: '🌧️', desc: 'Llovizna intensa'},
-                    61: {icon: '🌧️', desc: 'Lluvia ligera'},
-                    63: {icon: '🌧️', desc: 'Lluvia moderada'},
-                    65: {icon: '⛈️', desc: 'Lluvia intensa'},
-                    71: {icon: '🌨️', desc: 'Nevada ligera'},
-                    73: {icon: '🌨️', desc: 'Nevada moderada'},
-                    75: {icon: '❄️', desc: 'Nevada intensa'},
-                    80: {icon: '🌦️', desc: 'Chubascos ligeros'},
-                    81: {icon: '🌧️', desc: 'Chubascos moderados'},
-                    82: {icon: '⛈️', desc: 'Chubascos intensos'},
-                    95: {icon: '⛈️', desc: 'Tormenta electrica'},
-                    96: {icon: '⛈️', desc: 'Tormenta con granizo'},
-                    99: {icon: '⛈️', desc: 'Tormenta con granizo intenso'}
-                };
-
-                const code = current.weather_code;
-                const wInfo = weatherCodes[code] || {icon: '🌡️', desc: 'Desconocido'};
-                const isRaining = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(code) || current.precipitation > 0;
-
-                document.getElementById('wCity').textContent = loc.name;
-                document.getElementById('wCountry').textContent = loc.country || 'Desconocido';
-                document.getElementById('wIcon').textContent = wInfo.icon;
-                document.getElementById('wTemp').textContent = Math.round(current.temperature_2m) + '°C';
-                document.getElementById('wDesc').textContent = wInfo.desc;
-                document.getElementById('wHumidity').textContent = current.relative_humidity_2m + '%';
-                document.getElementById('wWind').textContent = current.wind_speed_10m + ' km/h';
-                document.getElementById('wFeels').textContent = Math.round(current.apparent_temperature) + '°C';
-                document.getElementById('wPressure').textContent = current.pressure_msl + ' hPa';
-
-                const rainDiv = document.getElementById('wRain');
-                if (isRaining) {
-                    rainDiv.textContent = '🌧️ SI LLOVERA / ESTA LLOVIENDO';
-                    rainDiv.className = 'rain-status rain-yes';
-                } else {
-                    rainDiv.textContent = '☀️ NO LLOVERA PRONTO';
-                    rainDiv.className = 'rain-status rain-no';
-                }
-                weatherResult.classList.add('show');
-            } catch (err) {
-                weatherError.textContent = '❌ ' + (err.message || 'Error al obtener el clima');
-                weatherError.classList.add('show');
-            } finally {
-                searchWeatherBtn.textContent = 'Buscar';
+        function donateCustom() {
+            const amount = document.getElementById('customAmount').value;
+            if (amount && amount > 0) {
+                window.open('https://www.paypal.com/paypalme/chizugz55/' + amount, '_blank');
+            } else {
+                alert('Por favor ingresa una cantidad válida');
             }
         }
 
-        searchWeatherBtn.addEventListener('click', searchWeather);
-        cityInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') searchWeather();
-        });
-
-        // ===== BUSCADOR SEGURO - REDIRECCION =====
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
-        const engineBtns = document.querySelectorAll('.engine-btn');
-        let currentEngine = 'duckduckgo';
-
-        const engines = {
-            duckduckgo: 'https://duckduckgo.com/?q=',
-            startpage: 'https://www.startpage.com/do/dsearch?query=',
-            brave: 'https://search.brave.com/search?q=',
-            searx: 'https://searx.be/search?q='
-        };
-
-        engineBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                engineBtns.forEach(function(b) { b.classList.remove('active'); });
-                btn.classList.add('active');
-                currentEngine = btn.dataset.engine;
-            });
-            btn.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                engineBtns.forEach(function(b) { b.classList.remove('active'); });
-                btn.classList.add('active');
-                currentEngine = btn.dataset.engine;
-            }, {passive: false});
-        });
-
-        function doSearch() {
-            const query = searchInput.value.trim();
-            if (!query) return;
-            const url = engines[currentEngine] + encodeURIComponent(query);
-            window.open(url, '_blank');
-        }
-
-        searchBtn.addEventListener('click', doSearch);
-        searchBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            doSearch();
-        }, {passive: false});
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') doSearch();
-        });
-
-        // Prevenir zoom en doble tap
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(e) {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                e.preventDefault();
+        document.getElementById('customAmount').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                donateCustom();
             }
-            lastTouchEnd = now;
-        }, false);
+        });
     </script>
 </body>
 </html>
